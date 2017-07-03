@@ -16,8 +16,9 @@ def collision(A,B):
     return horizontal and vertical
 
 def game_over():
-    print 'bye'
-  
+    print 'GAME OVER'
+    print 'score',snake.score
+
 FPS = 15
 BLACK = pygame.Color( 0 , 0  , 0  )
 WHITE = pygame.Color(255, 255, 255)
@@ -42,8 +43,8 @@ class Snake:
             snake.body[i]=pygame.Rect(snake.body[i-1])
         snake.body[0]=head
         for i in snake.body:
-            pygame.draw.rect(SCREEN,BLUE if i==snake.body[0] else RED,(i.left,i.top,i.width,i.height))            
-            
+            pygame.draw.rect(SCREEN,BLUE if i==snake.body[0] else RED,(i.left,i.top,i.width,i.height))
+
 pygame.init()
 pygame.display.set_caption('Snake Game')
 SCREEN = pygame.display.set_mode((SCREENX,SCREENY))
@@ -68,7 +69,7 @@ while True:
                 direction='right'
             elif(event.key==K_LCTRL):
                 snake.add()
-            elif(event.ket==K_ESCAPE):
+            elif(event.key==K_ESCAPE):
                 pygame.quit()
                 sys.exit()
         if event.type == QUIT:
@@ -84,15 +85,23 @@ while True:
         head.y-=snake.speed
     if(head.x==0 or head.x==SCREENX):
         head.x=SCREENX-head.x
-    if(head.y==0 or head.y==SCREENX):
+    if(head.y==0 or head.y==SCREENY):
         head.y=SCREENY-head.y
-        
+
     if collision(apple,snake.body[0]):
-         apple.left=m.randint(0,620)
-         apple.top=m.randint(0,460)
+         apple.left=R.randint(0,620)
+         apple.top=R.randint(0,460)
          snake.add()
-            
+         snake.score+=1
+
+    suicide=False
+    for i in snake.body[3:]:
+        if collision(i,snake.body[0]):
+            suicide=True
+    if suicide:
+        game_over()
+
     snake.draw(head)
-    pygame.draw.rect(SCREEN,GREEN,(apple.left,apple.top,apple.width,apple.height))            
+    pygame.draw.rect(SCREEN,GREEN,(apple.left,apple.top,apple.width,apple.height))
     pygame.display.update()
     fpsClock.tick(FPS)
