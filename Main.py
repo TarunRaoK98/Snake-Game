@@ -34,18 +34,19 @@ def game_over():
     time.sleep(5)
 
 class Snake:
-    def __init__(self,head):
-        self.body=[head]
+    def __init__(self):
+        self.head = pygame.Rect(SCREENX/2,SCREENY/2,10,10)
+        self.body=[self.head]
         self.score = 0
         self.speed=SPEED
     def add(self):
         l=len(self.body)
         self.body.append(self.body[l-1])
-    def draw(self,head):
+    def draw(self):
         l=len(self.body)
         for i in range(l-1,0,-1):
             snake.body[i]=pygame.Rect(snake.body[i-1])
-        snake.body[0]=head
+        snake.body[0]=self.head
         for i in snake.body:
             pygame.draw.rect(SCREEN,BLUE if i==snake.body[0] else RED,(i.left,i.top,i.width,i.height))
 
@@ -56,9 +57,9 @@ fpsClock=pygame.time.Clock()
 
 direction=''
 suicide=False
-head = pygame.Rect(SCREENX/2,SCREENY/2,10,10)
-snake=Snake(head)
-apple = pygame.Rect(R.randint(0,SCREENX-head.width),R.randint(0,SCREENY-head.height),20,20)
+snake=Snake()
+apple = pygame.Rect(R.randint(0,SCREENX-snake.head.width),R.randint(0,SCREENY-snake.head.height),20,20)
+
 while True:
     SCREEN.fill(WHITE)
     for event in pygame.event.get():
@@ -79,29 +80,33 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
     if (direction=='right'):
-        head.x+=snake.speed
+        snake.head.x+=snake.speed
     elif(direction=='down'):
-        head.y+=snake.speed
+        snake.head.y+=snake.speed
     elif(direction=='left'):
-        head.x-=snake.speed
+        snake.head.x-=snake.speed
     elif(direction=='up'):
-        head.y-=snake.speed
-    if(head.x==0 or head.x==SCREENX) and (direction!='up' and direction !='down'):
-        head.x=SCREENX-head.x
-    if(head.y==0 or head.y==SCREENY) and (direction!='right' and direction !='left'):
-        head.y=SCREENY-head.y
+        snake.head.y-=snake.speed
+
+    if(snake.head.x==0 or snake.head.x==SCREENX) and (direction!='up' and direction !='down'):
+        snake.head.x=SCREENX-snake.head.x
+    if(snake.head.y==0 or snake.head.y==SCREENY) and (direction!='right' and direction !='left'):
+        snake.head.y=SCREENY-snake.head.y
+
     if collision(apple,snake.body[0]):
-         apple.left=R.randint(0,620)
-         apple.top=R.randint(0,460)
+         apple.left=R.randint(apple.width,SCREENX-apple.width)
+         apple.top=R.randint(apple.height,SCREENY-apple.height)
          snake.add()
          snake.score+=1
+
     for i in snake.body[3:]:
         if collision(i,snake.body[0]):
             suicide=True
     if suicide:
         game_over()
-    snake.draw(head)
+    snake.draw()
     pygame.draw.rect(SCREEN,GREEN,(apple.left,apple.top,apple.width,apple.height))
     pygame.display.update()
     fpsClock.tick(FPS)
