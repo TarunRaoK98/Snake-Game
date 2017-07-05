@@ -2,6 +2,7 @@ import pygame,sys,time
 import random as R
 from pygame.locals import *
 
+
 FPS = 25
 BLACK = pygame.Color( 0 , 0  , 0  )
 WHITE = pygame.Color(255, 255, 255)
